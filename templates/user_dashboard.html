@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Dashboard - Lifeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        .btn-large {
+            display: inline-block;
+            padding: 6rem 9rem;
+            color: white;
+            font-size: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+        }
+        .btn-large:hover {
+            transform: scale(1.05);
+        }
+        .btn-user {
+            background-color: #4f46e5;
+        }
+        .btn-user:hover {
+            background-color: #4338ca;
+        }
+        .btn-hospital {
+            background-color: #10b981;
+        }
+        .btn-hospital:hover {
+            background-color: #059669;
+        }
+        .image-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+  }
+
+  .row {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    max-width: 700px;
+    justify-content: space-between;
+  }
+
+  .top-row {
+    justify-content: space-between;
+  }
+
+  .bottom-row {
+    justify-content:space-evenly;
+  }
+
+  .spacer {
+    flex: 1;
+  }
+
+  .image-card {
+    text-align: center;
+    width: 120px;
+  }
+
+  .image-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+  }
+
+  .image-card img:hover {
+    transform: scale(1.05);
+  }
+
+  .image-card p {
+    margin-top: 8px;
+    font-weight: 500;
+    color: #444;
+  }
+    </style>
+   <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+        .info-section {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+            margin-bottom: 2rem;
+        }
+        .info-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #2563eb;
+        }
+        .info-section p, .info-section ul {
+            color: #374151;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .info-section ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+        }
+        .info-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        .image-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: 20px;
+  }
+
+  .row {
+    display: flex;
+    gap: 40px;
+    width: 100%;
+    max-width: 700px;
+    flex-wrap: wrap;
+  }
+  #team-name
+  {
+    font-size: 1.5rem;
+    justify-content: center;
+    font-weight: 75;
+  }
+  .top-row {
+    justify-content: space-between;
+  }
+
+  .row-bottom-row {
+    justify-content: center;
+  }
+
+  .image-card {
+    text-align: center;
+    width: 120px;
+  }
+
+  .image-card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+  }
+
+  .image-card.small {
+    width: 100px;
+  }
+
+  .image-card.small img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .image-card img:hover {
+    transform: scale(1.05);
+  }
+
+  .image-card p {
+    margin-top: 8px;
+    font-weight: 500;
+    color: #444;
+  }
+        
+    </style>
+    <style>
+        /* Navbar container */
+        .navbar {
+          background-color: #ffffff;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+      
+        /* Navbar brand */
+        .navbar-brand {
+          font-weight: 600;
+          font-size: 1.5rem;
+          color: #0d6efd !important;
+        }
+      
+        /* Navbar links */
+        .nav-link {
+          color: #333 !important;
+          font-weight: 500;
+          padding: 0.5rem 1rem;
+          transition: color 0.3s ease;
+        }
+      
+        .nav-link:hover {
+          color: #0d6efd !important;
+        }
+      
+        .nav-link.active {
+          color: #0d6efd !important;
+        }
+      
+        .nav-link.disabled {
+          color: #aaa !important;
+          pointer-events: none;
+        }
+      
+        /* Dropdown styles */
+        .dropdown-menu {
+          border-radius: 0.5rem;
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+  width: 40px; /* Adjust logo size */
+  height: 40px;
+}
+        .dropdown-item {
+          font-weight: 500;
+          transition: background-color 0.2s ease;
+        }
+      
+        .dropdown-item:hover {
+          background-color: #f8f9fa;
+        }
+      
+        /* Search form */
+        .form-control {
+          border-radius: 0.375rem;
+        }
+      
+        .btn-outline-success {
+          border-color: #0d6efd;
+          color: #0d6efd;
+        }
+      
+        .btn-outline-success:hover {
+          background-color: #0d6efd;
+          color: white;
+        }
+      
+        /* Navbar toggler for mobile */
+        .navbar-toggler {
+          border: none;
+        }
+        html {
+    scroll-behavior: smooth;
+}
+        .navbar-toggler-icon {
+          background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%280, 0, 0, 0.5%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+        body {
+    font-family: 'Roboto', sans-serif;
+    background-image: url("{{ url_for('static', filename='background.jpg') }}");
+    background-size: cover; /* Cover the entire viewport */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    min-height: 100vh; /* Ensure the body takes at least the full height of the viewport */
+    margin: 0;
+}
+      </style>
+
+      
+</head>
+    <body class="bg-gray-100 min-h-screen flex flex-col">
+      
+    <input type="hidden" id="sessionUserId" value="{{ session.get('user_id') }}">
+    <nav class="bg-white bg-opacity-20 backdrop-blur-md shadow-md fixed w-full top-0 left-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Left: Logo + Back -->
+          <div class="flex items-center space-x-4">
+            <button onclick="window.history.back()" aria-label="Go back" class="text-white hover:text-gray-300">
+              <i class="fas fa-arrow-left fa-lg"></i>
+            </button>
+            <a href="/user" class="flex items-center space-x-2 text-white font-semibold text-lg hover:text-gray-300">
+              <img src="{{ url_for('static', filename='abb.png') }}" alt="Lifeline Logo" class="h-10 w-auto" />
+              <span>Lifeline</span>
+            </a>
+          </div>
+    
+          <!-- Right: Navigation links + Call + Menu -->
+          <div class="flex items-center space-x-6">
+            <div class="hidden md:flex space-x-6">
+              <a href="/user/dashboard" class="text-white hover:text-gray-300 font-medium">Homepage</a>
+              <a href="#about" class="text-white hover:text-gray-300 font-medium">About</a>
+            </div>
+    
+            <button id="navbarShowContactBtn" title="Show Emergency Contact" class="bg-red-600 p-2 rounded-full hover:bg-red-700 transition text-white">
+              <i class="fas fa-phone-alt"></i>
+            </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="flex-grow p-6 max-w-4xl mx-auto space-y-10">
+        <section class="flex flex-col md:flex-row justify-center items-center gap-8" style="margin-top: 50px;">
+            <a href="{{ url_for('user_report') }}" class="w-64 h-32 bg-blue-600 text-white text-2xl rounded-lg flex items-center justify-center shadow-lg hover:bg-blue-700 transition" style=" background-color: #6A9C89;">
+                User Report
+            </a>
+            <a href="{{ url_for('user_chatbot') }}" class="w-64 h-32 bg-green-600 text-white text-2xl rounded-lg flex items-center justify-center shadow-lg hover:bg-green-700 transition" style="background-color: #FFC470;">
+                Talk with Chatbot
+            </a>
+            <button id="newSosBtn" class="w-64 h-32 bg-red-600 text-white text-2xl rounded-lg flex items-center justify-center shadow-lg hover:bg-red-700 transition">
+                SOS
+            </button>
+        </section>
+        <section class="bg-white p-6 rounded-lg shadow-lg  mx-auto">
+            <h2 class="text-2xl font-semibold mb-4" >Add Emergency Contact</h2>
+            <form id="emergencyContactForm" class="space-y-4">
+                <div>
+                    <label for="contactName" class="block text-gray-700 font-medium mb-1">Name</label>
+                    <input type="text" id="contactName" name="contactName" placeholder="Contact Name" class="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                </div>
+                <div>
+                    <label for="contactNumber" class="block text-gray-700 font-medium mb-1">Phone Number</label>
+                    <input type="tel" id="contactNumber" name="contactNumber" placeholder="Contact Number" class="w-full rounded-md border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+                </div>
+                <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition w-full" style="background-color: #0D92F4;">Save Emergency Contact</button>
+            </form>
+            <div id="saveStatus" class="mt-4 text-green-600 font-semibold hidden">Emergency contact saved successfully!</div>
+        </section>
+        <section class="info-section" id="about">
+            <h2 >About Lifeline</h2>
+            <p>
+                Lifeline is a cutting-edge emergency response web application designed to connect users with hospitals instantly during emergencies. Our platform leverages voice recognition technology to allow users to quickly communicate their emergency situation, ensuring rapid response and assistance.
+            </p>
+            <p>
+                Key benefits of Lifeline include:
+            </p>
+            <ul>
+                <li>Instant SOS signal with voice input for accurate emergency description.</li>
+                <li>Automatic notification to nearest hospitals using location services.</li>
+                <li>Emergency contact alerts to keep your loved ones informed.</li>
+                <li>Secure user dashboard to view medical reports and communicate with chatbot.</li>
+                <li>Hospital dashboard for efficient report management and updates.</li>
+                <li>Real-time updates and location tracking for enhanced emergency response.</li>
+            </ul>
+            
+              
+                            
+        </section>
+        <section class="info-section">
+          <h1 id="team-name">Team: Null Pointers United</h1>
+            <div class="image-stack">
+                <div class="row top-row">
+                  <div class="image-card">
+                    <img src="{{ url_for('static', filename='maahi.jpg') }}" alt="Name 1">
+                    <p>Maahi Khedkar</p>
+                  </div>
+                  <div class="image-card">
+                    <img src="{{ url_for('static', filename='kislay.jpg') }}" alt="Name 2">
+                    <p>Kislay Kuldeep Dhote</p>
+                  </div>
+                  <div class="image-card">
+                    <img src="{{ url_for('static', filename='piyush.jpg') }}" alt="Name 3">
+                    <p>Piyush Maheswari</p>
+                  </div>
+                </div>
+              
+                <div class="row bottom-row">
+                  <div class="image-card small">
+                    <img src="{{ url_for('static', filename='nishant.jpg') }}" alt="Name 4">
+                    <p>Nishant Leon Minj</p>
+                  </div>
+                  <div class="image-card small">
+                    <img src="{{ url_for('static', filename='adarsh.jpg') }}" alt="Name 5">
+                    <p>Adarsh Solanki</p>
+                  </div>
+                </div>
+              </div>
+        </section>
+    </main>
+
+        <script>
+        const emergencyContactForm = document.getElementById('emergencyContactForm');
+        const saveStatus = document.getElementById('saveStatus');
+        const navbarShowContactBtn = document.getElementById('navbarShowContactBtn');
+
+        const newSosBtn = document.getElementById('newSosBtn');
+
+        function sendSosSignal(message) {
+            const userId = document.getElementById('sessionUserId').value || 'Unknown User';
+
+            fetch('/user/sos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, message: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('SOS signal sent: ' + data.status + '\\nHospital: ' + data.hospital_name);
+            })
+            .catch(() => {
+                alert('Error sending SOS signal.');
+            });
+        }
+
+        newSosBtn.addEventListener('click', () => {
+            sendSosSignal('Emergency SOS signal from dashboard.');
+        });
+ 
+        emergencyContactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value.trim();
+            const number = document.getElementById('contactNumber').value.trim();
+ 
+            if (!name || !number) {
+                alert('Please enter both name and phone number.');
+                return;
+            }
+ 
+            fetch('/user/emergency_contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, number: number }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    saveStatus.classList.remove('hidden');
+                    setTimeout(() => {
+                        saveStatus.classList.add('hidden');
+                    }, 3000);
+                    // Removed sending SOS signal after saving contact as per user request
+                    // sendSosSignal(`Emergency contact saved: ${name} - ${number}`);
+                } else {
+                    alert('Failed to save emergency contact.');
+                }
+            })
+            .catch(() => {
+                alert('Error saving emergency contact.');
+            });
+        });
+ 
+         navbarShowContactBtn.addEventListener('click', () => {
+             const popupId = 'emergencyContactPopup';
+             let popup = document.getElementById(popupId);
+             if (!popup) {
+                 popup = document.createElement('div');
+                 popup.id = popupId;
+                 popup.className = 'fixed top-16 right-4 bg-white border border-gray-300 rounded shadow-lg p-4 w-64 z-50';
+                 popup.innerHTML = `
+                     <h3 class="font-semibold text-lg mb-2 text-blue-600">Emergency Contact</h3>
+                     <p id="emergencyContactText" class="text-gray-800">Loading...</p>
+                     <button id="closePopupBtn" class="mt-4 bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 transition text-sm">Close</button>
+                 `;
+                 document.body.appendChild(popup);
+ 
+                 const closeBtn = document.getElementById('closePopupBtn');
+                 closeBtn.addEventListener('click', () => {
+                     popup.classList.add('hidden');
+                 });
+ 
+                 document.addEventListener('click', (event) => {
+                     if (!popup.contains(event.target) && !navbarShowContactBtn.contains(event.target)) {
+                         popup.classList.add('hidden');
+                     }
+                 });
+             }
+ 
+             if (popup.classList.contains('hidden') || !document.body.contains(popup)) {
+                 fetch('/user/emergency_contact')
+                     .then(response => response.json())
+                     .then(data => {
+                         const contactText = document.getElementById('emergencyContactText');
+                         if (data.status === 'success' && data.emergency_contact) {
+                             contactText.textContent = data.emergency_contact;
+                         } else {
+                             contactText.textContent = 'No emergency contact saved.';
+                         }
+                         popup.classList.remove('hidden');
+                     })
+                     .catch(() => {
+                         const contactText = document.getElementById('emergencyContactText');
+                         contactText.textContent = 'Error fetching emergency contact.';
+                         popup.classList.remove('hidden');
+                     });
+             } else {
+                 popup.classList.add('hidden');
+             }
+         });
++
+        navbarSosBtn.addEventListener('click', () => {
+        });
+
+        function sendSosSignal(message) {
+            const userId = document.getElementById('sessionUserId').value || 'Unknown User';
+
+            fetch('/user/sos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('SOS signal sent: ' + data.status + '\\nHospital: ' + data.hospital_name);
+            })
+            .catch(() => {
+                alert('Error sending SOS signal.');
+            });
+        }
+
+        // Google Maps integration to show nearest hospital (dummy location for demo)
+        function initMap() {
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const nearestHospitalsBtn = document.getElementById('nearestHospitalsBtn');
+            if (nearestHospitalsBtn) {
+                nearestHospitalsBtn.addEventListener('click', () => {
+                    window.open('https://www.google.com/maps/search/hospitals+in+kolar+bhopal+mp+with+there+speciality/@23.1648383,77.4171598,15.83z?entry=ttu&g_ep=EgoyMDI1MDQxNi4xIKXMDSoASAFQAw%3D%3D', '_blank');
+                });
+            }
+        });
+    </script>
+    
+</body>
+</html>

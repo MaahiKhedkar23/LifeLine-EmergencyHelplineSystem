@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lifeline - Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .btn-large {
+            display: inline-block;
+            padding: 6rem 9rem;
+            color: white;
+            font-size: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+        }
+        .btn-large:hover {
+            transform: scale(1.05);
+        }
+        .btn-user {
+            background-color: #4f46e5;
+        }
+        .btn-user:hover {
+            background-color: #4338ca;
+        }
+        .btn-hospital {
+            background-color: #10b981;
+        }
+        .btn-hospital:hover {
+            background-color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex; gap: 4rem;">
+        <a href="{{ url_for('user_page') }}" class="btn-large btn-user">
+            User End
+        </a>
+        <a href="{{ url_for('hospital_login') }}" class="btn-large btn-hospital">
+            Hospital End
+        </a>
+    </div>
+</body>
+</html>

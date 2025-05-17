@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hospital Dashboard - Lifeline</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f9fafb;
+        }
+        .header {
+            background-color: #047857; /* Emerald-600 */
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .header p {
+            margin-top: 0.25rem;
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        form#reportForm {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        form#reportForm:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: 600;
+            color: #065f46; /* Emerald-700 */
+        }
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db; /* Gray-300 */
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: #111827; /* Gray-900 */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #10b981; /* Emerald-500 */
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.3);
+        }
+        button[type="submit"] {
+            background-color: #059669; /* Emerald-600 */
+            color: white;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        button[type="submit"]:hover {
+            background-color: #047857; /* Emerald-700 */
+        }
+        #emergencyNotification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background-color: #dc2626; /* Red-600 */
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(220,38,38,0.4);
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+        #emergencyNotification i {
+            font-size: 1.5rem;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        #userReportsModal {
+            background-color: rgba(0,0,0,0.5);
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        #userReportsModal > div {
+            background: white;
+            border-radius: 1rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+        #userReportsModal h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #065f46;
+        }
+        #closeReportsModal {
+            align-self: flex-end;
+            background-color: #e5e7eb; /* Gray-200 */
+            color: #374151; /* Gray-700 */
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        #closeReportsModal:hover {
+            background-color: #d1d5db; /* Gray-300 */
+        }
+        #userReportsContent > div {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        #userReportsContent > div:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #userReportsContent h4 {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            color: #047857;
+        }
+        #userReportsContent p {
+            color: #374151;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>{{ hospital_name }}</h1>
+        <p>{{ hospital_description }}</p>
+    </header>
+    <main>
+        <h2 class="text-3xl font-semibold mb-6 text-emerald-700">Add New Report</h2>
+        <form id="reportForm">
+            <div class="mb-4">
+                <label for="user_id">User ID</label>
+                <input type="text" id="user_id" name="user_id" required />
+            </div>
+            <div class="mb-4">
+                <label for="hospital_name">Hospital Name</label>
+                <input type="text" id="hospital_name" name="hospital_name" required />
+            </div>
+            <div class="mb-4">
+                <label for="report_name">Report Name</label>
+                <input type="text" id="report_name" name="report_name" required />
+            </div>
+            <div class="mb-4">
+                <label for="report_type">Type of Report</label>
+                <input type="text" id="report_type" name="report_type" required />
+            </div>
+            <div class="mb-4">
+                <label for="result">Result</label>
+                <textarea id="result" name="result" rows="3" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="remark">Remark</label>
+                <textarea id="remark" name="remark" rows="2"></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="critical">Critical Condition</label>
+                <select id="critical" name="critical" required>
+                    <option value="">Select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="flex justify-center">
+                <button type="submit">Add Report</button>
+            </div>
+        </form>
+
+        <div id="emergencyNotification" class="hidden">
+            <i class="fas fa-exclamation-triangle"></i>
+            Emergency signal received! Click to view user reports.
+        </div>
+
+        <div id="userReportsModal" class="hidden">
+            <div>
+                <h3>User Reports</h3>
+                <button id="closeReportsModal">Close</button>
+                <div id="userReportsContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const reportForm = document.getElementById('reportForm');
+        reportForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = {
+                user_id: document.getElementById('user_id').value.trim(),
+                hospital_name: document.getElementById('hospital_name').value.trim(),
+                report_name: document.getElementById('report_name').value.trim(),
+                report_type: document.getElementById('report_type').value.trim(),
+                result: document.getElementById('result').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                remark: document.getElementById('remark').value.trim(),
+                critical: document.getElementById('critical').value,
+                date: new Date().toISOString().split('T')[0]
+            };
+
+            fetch('/api/hospital/reports', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Report added successfully.');
+                    reportForm.reset();
+                } else {
+                    alert('Failed to add report.');
+                }
+            })
+            .catch(() => {
+                alert('Error adding report.');
+            });
+        });
+
+        const emergencyNotification = document.getElementById('emergencyNotification');
+        const userReportsModal = document.getElementById('userReportsModal');
+        const userReportsContent = document.getElementById('userReportsContent');
+        const closeReportsModal = document.getElementById('closeReportsModal');
+
+        let lastSosTimestamp = null;
+
+        function fetchSosSignal() {
+            fetch('/api/hospital/sos')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'new') {
+                        const sos = data.sos;
+                        if (lastSosTimestamp !== sos.timestamp) {
+                            lastSosTimestamp = sos.timestamp;
+                            showEmergencyNotification(data.reports);
+                        }
+                    }
+                })
+                .catch(() => {
+                    console.error('Error fetching SOS signal.');
+                });
+        }
+
+        function showEmergencyNotification(reports) {
+            emergencyNotification.classList.remove('hidden');
+            emergencyNotification.style.display = 'flex';
+            emergencyNotification.onclick = () => {
+                window.open('https://www.google.co.in/maps/@23.1749173,77.388182,19.58z?entry=ttu&g_ep=EgoyMDI1MDQxNi4xIKXMDSoASAFQAw%3D%3D', '_blank');
+                emergencyNotification.classList.add('hidden');
+                emergencyNotification.style.display = 'none';
+            };
+        }
+
+        function showUserReports(reports) {
+            userReportsContent.innerHTML = '';
+            if (reports.length === 0) {
+                userReportsContent.innerHTML = '<p>No reports available for this user.</p>';
+            } else {
+                reports.forEach(report => {
+                    const reportDiv = document.createElement('div');
+                    reportDiv.className = 'border border-gray-300 rounded p-4 shadow-sm mb-4 hover:shadow-md transition-shadow';
+                    reportDiv.innerHTML = `
+                        <h4 class="font-semibold text-lg mb-2 text-emerald-700">${report.report_name} (${report.report_type})</h4>
+                        <p><strong>Result:</strong> ${report.result}</p>
+                        <p><strong>Description:</strong> ${report.description || 'N/A'}</p>
+                        <p><strong>Remark:</strong> ${report.remark || 'N/A'}</p>
+                        <p><strong>Critical:</strong> ${report.critical}</p>
+                        <p><strong>Date:</strong> ${report.date}</p>
+                    `;
+                    userReportsContent.appendChild(reportDiv);
+                });
+            }
+            userReportsModal.classList.remove('hidden');
+            userReportsModal.style.display = 'flex';
+        }
+
+        closeReportsModal.addEventListener('click', () => {
+            userReportsModal.classList.add('hidden');
+            userReportsModal.style.display = 'none';
+        });
+
+        setInterval(fetchSosSignal, 10000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Chatbot - Lifeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        .btn-large {
+            display: inline-block;
+            padding: 6rem 9rem;
+            color: white;
+            font-size: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+        }
+        .btn-large:hover {
+            transform: scale(1.05);
+        }
+        .btn-user {
+            background-color: #4f46e5;
+        }
+        .btn-user:hover {
+            background-color: #4338ca;
+        }
+        .btn-hospital {
+            background-color: #10b981;
+        }
+        .btn-hospital:hover {
+            background-color: #059669;
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        #chatContainer {
+            max-width: 600px;
+            margin: 2rem auto;
+            margin-top: 100px;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        #chatMessages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        .message {
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            max-width: 75%;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #3b82f6;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        .bot-message {
+            background-color: #e5e7eb;
+            color: #374151;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        #chatInputContainer {
+            display: flex;
+            gap: 0.5rem;
+        }
+        #chatInput {
+            flex-grow: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            border: 1px solid #d1d5db;
+            outline: none;
+        }
+        #sendButton {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            padding: 0 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #sendButton:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white bg-opacity-20 backdrop-blur-md shadow-md fixed w-full top-0 left-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <!-- Left: Logo + Back -->
+            <div class="flex items-center space-x-4">
+              <button onclick="window.history.back()" aria-label="Go back" class="text-white hover:text-gray-300">
+                <i class="fas fa-arrow-left fa-lg"></i>
+              </button>
+              <a href="/user" class="flex items-center space-x-2 text-white font-semibold text-lg hover:text-gray-300">
+                <img src="{{ url_for('static', filename='abb.png') }}" alt="Lifeline Logo" class="h-10 w-auto" />
+                <span>Lifeline</span>
+              </a>
+            </div>
+      
+            <!-- Right: Navigation links + Call + Menu -->
+            <div class="flex items-center space-x-6">
+              <div class="hidden md:flex space-x-6">
+                <a href="/user/dashboard" class="text-white hover:text-gray-300 font-medium">Homepage</a>
+              </div>
+      
+              <button id="navbarShowContactBtn" title="Show Emergency Contact" class="bg-red-600 p-2 rounded-full hover:bg-red-700 transition text-white">
+                <i class="fas fa-phone-alt"></i>
+              </button>
+      
+            </div>
+          </div>
+        </div>
+      </nav>
+    <div id="chatContainer">
+        <div id="chatMessages"></div>
+        <div id="chatInputContainer">
+            <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off" />
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+
+        function appendMessage(sender, message) {
+            const div = document.createElement('div');
+            div.classList.add('message');
+            if (sender === 'You') {
+                div.classList.add('user-message');
+            } else {
+                div.classList.add('bot-message');
+            }
+            div.textContent = message;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message === '') return;
+            appendMessage('You', message);
+            chatInput.value = '';
+
+            try {
+                const response = await fetch('/api/chatbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+                const data = await response.json();
+                appendMessage('Chatbot', data.response);
+            } catch (error) {
+                appendMessage('Chatbot', 'Sorry, there was an error processing your message.');
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

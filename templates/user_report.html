@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Report - Lifeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+        }
+        .btn-large {
+            display: inline-block;
+            padding: 6rem 9rem;
+            color: white;
+            font-size: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+        }
+        .btn-large:hover {
+            transform: scale(1.05);
+        }
+        .btn-user {
+            background-color: #4f46e5;
+        }
+        .btn-user:hover {
+            background-color: #4338ca;
+        }
+        .btn-hospital {
+            background-color: #10b981;
+        }
+        .btn-hospital:hover {
+            background-color: #059669;
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .report-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+        }
+        .report-header {
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #2563eb;
+        }
+        .report-section {
+            margin-bottom: 0.5rem;
+        }
+        .report-label {
+            font-weight: 600;
+            color: #374151;
+        }
+        .critical-yes {
+            color: #dc2626;
+            font-weight: 700;
+        }
+        .critical-no {
+            color: #16a34a;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+    <nav class="bg-white bg-opacity-20 backdrop-blur-md shadow-md fixed w-full top-0 left-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <!-- Left: Logo + Back -->
+            <div class="flex items-center space-x-4">
+              <button onclick="window.history.back()" aria-label="Go back" class="text-white hover:text-gray-300">
+                <i class="fas fa-arrow-left fa-lg"></i>
+              </button>
+              <a href="/user" class="flex items-center space-x-2 text-white font-semibold text-lg hover:text-gray-300">
+                <img src="{{ url_for('static', filename='abb.png') }}" alt="Lifeline Logo" class="h-10 w-auto" />
+                <span>Lifeline</span>
+              </a>
+            </div>
+      
+            <!-- Right: Navigation links + Call + Menu -->
+            <div class="flex items-center space-x-6">
+              <div class="hidden md:flex space-x-6">
+                <a href="/user/dashboard" class="text-white hover:text-gray-300 font-medium">Homepage</a>
+                
+              </div>
+      
+              <button id="navbarShowContactBtn" title="Show Emergency Contact" class="bg-red-600 p-2 rounded-full hover:bg-red-700 transition text-white">
+                <i class="fas fa-phone-alt"></i>
+              </button>
+      
+              
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+    <h1 class="text-3xl font-bold mb-6" style="margin-top: 50px; color:white">Your Medical Reports</h1>
+    <div id="reportsContainer">
+        <!-- Reports will be loaded here -->
+    </div>
+
+    <script>
+        async function fetchReports() {
+            try {
+                const response = await fetch('/api/user/reports');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch reports');
+                }
+                const reports = await response.json();
+                const container = document.getElementById('reportsContainer');
+                container.innerHTML = '';
+
+                if (reports.length === 0) {
+                    container.innerHTML = '<p>No reports available.</p>';
+                    return;
+                }
+
+                reports.forEach(report => {
+                    const div = document.createElement('div');
+                    div.className = 'report-card';
+
+                    div.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div class="report-header">${report.report_name} - ${report.date}</div>
+                        <button data-id="${report.id}" class="delete-report-btn text-red-600 hover:text-red-800 px-3 py-1 rounded bg-red-100 hover:bg-red-200 transition" title="Delete Report" aria-label="Delete Report">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                        </div>
+                        <div class="report-section"><span class="report-label">Hospital:</span> ${report.hospital_name}</div>
+                        <div class="report-section"><span class="report-label">Type:</span> ${report.report_type}</div>
+                        <div class="report-section"><span class="report-label">Result:</span> ${report.result}</div>
+                        <div class="report-section"><span class="report-label">Description:</span> ${report.description}</div>
+                        <div class="report-section"><span class="report-label">Remark:</span> ${report.remark}</div>
+                        <div class="report-section"><span class="report-label">Critical Condition:</span> <span class="${report.critical === 'yes' ? 'critical-yes' : 'critical-no'}">${report.critical}</span></div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Initial fetch
+        fetchReports();
+
+        // Poll every 10 seconds
+        setInterval(fetchReports, 10000);
+
+        // Delegate event listener for delete buttons
+        document.getElementById('reportsContainer').addEventListener('click', async (event) => {
+            if (event.target.closest('.delete-report-btn')) {
+                const button = event.target.closest('.delete-report-btn');
+                const reportId = button.getAttribute('data-id');
+                if (confirm('Are you sure you want to delete this report?')) {
+                    try {
+                        const response = await fetch(`/api/user/reports/${reportId}`, {
+                            method: 'DELETE',
+                        });
+                        const result = await response.json();
+                        if (result.status === 'success') {
+                            alert('Report deleted successfully.');
+                            fetchReports();
+                        } else {
+                            alert('Failed to delete report: ' + result.message);
+                        }
+                    } catch (error) {
+                        alert('Error deleting report.');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

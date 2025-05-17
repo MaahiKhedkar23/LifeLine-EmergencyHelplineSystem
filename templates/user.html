@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User End - Lifeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        #hospitalInfo {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #fef3f2;
+            border: 1px solid #f87171;
+            border-radius: 0.5rem;
+            color: #b91c1c;
+            font-weight: 600;
+        }
+        .form-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .form-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        .form-toggle button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .form-toggle button.active {
+            background-color: #2563eb;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+    <nav class="bg-white bg-opacity-20 backdrop-blur-md shadow-md fixed w-full top-0 left-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <!-- Left: Logo + Back -->
+            <div class="flex items-center space-x-4">
+              <button onclick="window.history.back()" aria-label="Go back" class="text-white hover:text-gray-300">
+                <i class="fas fa-arrow-left fa-lg" style="color: #2563eb;"></i>
+              </button>
+              <a href="/user" class="flex items-center space-x-2 text-white font-semibold text-lg hover:text-gray-300">
+                <img src="{{ url_for('static', filename='abb.png') }}" alt="Lifeline Logo" class="h-10 w-auto" />
+                <span style="color: #2563eb;">Lifeline</span>
+              </a>
+            </div>
+      
+          </div>
+        </div>
+      </nav>
+    <input type="hidden" id="sessionUserId" value="{{ session.get('user_id') }}">
+    <h1 class="text-4xl font-bold mb-8" style="margin: 50px;">Welcome to LifeLine</h1>
+
+    <div class="form-toggle">
+        <button id="loginToggle" class="active">Login</button>
+        <button id="createToggle">Create User</button>
+    </div>
+
+    <form id="loginForm" method="POST" class="w-full max-w-md space-y-6 bg-white p-8 rounded-lg shadow-lg" >
+        <div>
+            <label for="user_id" class="block text-lg font-medium text-gray-700">User ID</label>
+            <input type="text" id="user_id" name="user_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+        </div>
+        <div>
+            <label for="password" class="block text-lg font-medium text-gray-700">Password</label>
+            <input type="password" id="password" name="password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+        </div>
+        <div class="flex justify-between items-center">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-700 transition">Login</button>
+            <button type="button" id="sosButton" class="bg-red-600 text-white px-6 py-3 rounded-lg text-lg hover:bg-red-700 transition flex items-center space-x-2">
+                <i class="fas fa-bullhorn"></i>
+                <span>SOS</span>
+            </button>
+        </div>
+        <div class="mt-4 text-center">
+            <button type="button" id="showCreateUserBtn" class="text-blue-600 hover:underline font-semibold">Create New Account</button>
+        </div>
+    </form>
+
+    <form id="createUserForm" class="w-full max-w-md space-y-6 bg-white p-8 rounded-lg shadow-lg hidden">
+        <div>
+            <label for="new_user_id" class="block text-lg font-medium text-gray-700">User ID</label>
+            <input type="text" id="new_user_id" name="new_user_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-300 focus:ring-opacity-50" />
+        </div>
+        <div>
+            <label for="new_password" class="block text-lg font-medium text-gray-700">Password</label>
+            <input type="password" id="new_password" name="new_password" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-300 focus:ring-opacity-50" />
+        </div>
+        <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition w-full">Create User</button>
+    </form>
+
+    <div id="recognizedText" class="mt-6 p-4 w-full max-w-md bg-yellow-100 text-yellow-900 rounded-lg shadow-md hidden"></div>
+    <div id="hospitalInfo" class="hidden"></div>
+    <div id="messageBox" class="w-full max-w-md p-6 bg-red-100 border-2 border-red-600 rounded-lg shadow-lg text-center text-red-800 font-semibold text-xl"></div>
+
+    <script>
+        const loginToggle = document.getElementById('loginToggle');
+        const createToggle = document.getElementById('createToggle');
+        const loginForm = document.getElementById('loginForm');
+        const createUserForm = document.getElementById('createUserForm');
+        const showCreateUserBtn = document.getElementById('showCreateUserBtn');
+
+        loginToggle.addEventListener('click', () => {
+            loginToggle.classList.add('active');
+            createToggle.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            createUserForm.classList.add('hidden');
+        });
+
+        createToggle.addEventListener('click', () => {
+            createToggle.classList.add('active');
+            loginToggle.classList.remove('active');
+            createUserForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+
+        showCreateUserBtn.addEventListener('click', () => {
+            createToggle.classList.add('active');
+            loginToggle.classList.remove('active');
+            createUserForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userId = document.getElementById('user_id').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            fetch('/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId, password: password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = '/user/dashboard';
+                } else {
+                    alert('Login failed: ' + data.message);
+                }
+            })
+            .catch(() => {
+                alert('Error during login.');
+            });
+        });
+
+        createUserForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newUserId = document.getElementById('new_user_id').value.trim();
+            const newPassword = document.getElementById('new_password').value.trim();
+
+            fetch('/user/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: newUserId, password: newPassword }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('User created successfully. You can now login.');
+                    createUserForm.reset();
+                    createToggle.click();
+                } else {
+                    alert('User creation failed: ' + data.message);
+                }
+            })
+            .catch(() => {
+                alert('Error during user creation.');
+            });
+        });
+
+        const sosButton = document.getElementById('sosButton');
+        const recognizedTextDiv = document.getElementById('recognizedText');
+        const hospitalInfoDiv = document.getElementById('hospitalInfo');
+        const messageBox = document.getElementById('messageBox');
+
+        sosButton.addEventListener('click', () => {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('Speech recognition not supported in this browser.');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.continuous = false;
+
+            let spokenText = '';
+            let timeoutId;
+
+            recognition.onstart = () => {
+                console.log('Voice recognition started. Please speak.');
+                recognizedTextDiv.textContent = 'Listening...';
+                recognizedTextDiv.classList.remove('hidden');
+                hospitalInfoDiv.classList.add('hidden');
+                messageBox.classList.add('hidden');
+                timeoutId = setTimeout(() => {
+                    recognition.stop();
+                }, 10000); // 10 seconds timeout
+            };
+
+            recognition.onresult = (event) => {
+                spokenText = event.results[0][0].transcript;
+                console.log('Recognized text:', spokenText);
+                recognizedTextDiv.textContent = 'You said: ' + spokenText;
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error', event.error);
+                recognizedTextDiv.textContent = 'Error during speech recognition: ' + event.error;
+            };
+
+            recognition.onend = () => {
+                clearTimeout(timeoutId);
+                if (spokenText.trim() === '') {
+                    spokenText = 'There is an emergency.';
+                    recognizedTextDiv.textContent = spokenText;
+                }
+                sendSosSignal(spokenText);
+            };
+
+            recognition.start();
+        });
+
+        function sendSosSignal(message) {
+            const userId = document.getElementById('sessionUserId').value || 'Unknown User';
+
+            fetch('/user/sos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    message: message,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('SOS signal sent: ' + data.status + '\\nHospital: ' + data.hospital_name);
+                hospitalInfoDiv.textContent = 'SOS signal sent to hospital: ' + data.hospital_name;
+                hospitalInfoDiv.classList.remove('hidden');
+                startMessageCycle();
+            })
+            .catch(() => {
+                alert('Error sending SOS signal.');
+            });
+        }
+
+        const messages = [
+            "Stay calm.",
+            "Take a deep breath.",
+            "Have some water.",
+            "Remember, help is on the way."
+        ];
+
+        let messageIndex = 0;
+        let messageInterval;
+
+        function startMessageCycle() {
+            messageBox.textContent = messages[messageIndex];
+            messageBox.classList.remove('hidden');
+            messageInterval = setInterval(() => {
+                messageIndex = (messageIndex + 1) % messages.length;
+                messageBox.textContent = messages[messageIndex];
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

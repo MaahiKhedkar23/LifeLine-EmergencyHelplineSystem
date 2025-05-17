@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hospital Login - Lifeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        #map {
+            height: 300px;
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+        }
+        button {
+            background-color: #22c55e;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #16a34a;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+    <h1 class="text-4xl font-bold mb-8">Hospital Login</h1>
+    <form method="POST" class="w-full max-w-md bg-white p-8 rounded-lg shadow-lg" id="hospitalLoginForm">
+        <div class="form-group">
+            <label for="hospital_select">Select Hospital</label>
+            <select id="hospital_select" name="hospital_name" required>
+                <option value="">Select a hospital</option>
+                <option value="JK Hospital Bhopal">JK Hospital Bhopal</option>
+                <option value="Apollo Sage Hospital">Apollo Sage Hospital</option>
+                <option value="Bansal Hospital">Bansal Hospital</option>
+                <option value="Galaxy Hospital">Galaxy Hospital</option>
+                <option value="Siddhanta Hospital">Siddhanta Hospital</option>
+                <option value="Hamidia Hospital">Hamidia Hospital</option>
+                <option value="Chirayu Hospital">Chirayu Hospital</option>
+                <option value="Manoriya Hospital">Manoriya Hospital</option>
+                <option value="Sagar Multispeciality Hospital">Sagar Multispeciality Hospital</option>
+            </select>
+        </div>
+        <div class="flex justify-center mt-6">
+            <button type="submit">Login</button>
+        </div>
+    </form>
+</body>
+</html>
